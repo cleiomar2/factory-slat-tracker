@@ -1,68 +1,23 @@
-# Shadcn-UI Template Usage Instructions
+# GitHub Pages Deployment
 
-## technology stack
+Ta aplikacja jest gotowa do uruchomienia na GitHub Pages.
 
-This project is built with:
+## Instrukcje dla GitHub Pages:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+1. Wejdź na https://github.com/cleiomar2/factory-slat-tracker
+2. Kliknij "Settings"
+3. Przewiń do sekcji "Pages"
+4. W "Source" wybierz "Deploy from a branch"
+5. W "Branch" wybierz "main"
+6. **WAŻNE:** W folderze wybierz "/docs" (nie root!)
+7. Kliknij "Save"
 
-All shadcn/ui components have been downloaded under `@/components/ui`.
+Aplikacja będzie dostępna pod adresem:
+https://cleiomar2.github.io/factory-slat-tracker
 
-## File Structure
+## Co znajduje się w folderze docs/:
+- index.html - główna strona aplikacji
+- assets/ - wszystkie pliki CSS i JavaScript
+- Gotowa, zbudowana aplikacja React
 
-- `index.html` - HTML entry point
-- `vite.config.ts` - Vite configuration file
-- `tailwind.config.js` - Tailwind CSS configuration file
-- `package.json` - NPM dependencies and scripts
-- `src/app.tsx` - Root component of the project
-- `src/main.tsx` - Project entry point
-- `src/index.css` - Existing CSS configuration
-- `src/pages/Index.tsx` - Home page logic
-
-## Components
-
-- All shadcn/ui components are pre-downloaded and available at `@/components/ui`
-
-## Styling
-
-- Add global styles to `src/index.css` or create new CSS files as needed
-- Use Tailwind classes for styling components
-
-## Development
-
-- Import components from `@/components/ui` in your React components
-- Customize the UI by modifying the Tailwind configuration
-
-## Note
-
-- The `@/` path alias points to the `src/` directory
-- In your typescript code, don't re-export types that you're already importing
-
-# Commands
-
-**Install Dependencies**
-
-```shell
-pnpm i
-```
-
-**Add Dependencies**
-
-```shell
-pnpm add some_new_dependency
-
-**Start Preview**
-
-```shell
-pnpm run dev
-```
-
-**To build**
-
-```shell
-pnpm run build
-```
+Poczekaj 2-3 minuty po zmianie ustawień - GitHub potrzebuje czasu na wdrożenie.
