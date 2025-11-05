@@ -1,23 +1,698 @@
 <!DOCTYPE html>
 <html lang="pl">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" href="https://public-frontend-cos.metadl.com/mgx/img/favicon.png" type="image/png">
-  <title>Tracker Listew Fabrycznych</title>
-  <meta name="description" content="System zarządzania inwentarzem dla fabryki" />
-  <meta name="author" content="MGX" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tracker Listew Fabrycznych</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  <meta property="og:title" content="Tracker Listew Fabrycznych" />
-  <meta property="og:description" content="System zarządzania inwentarzem dla fabryki" />
-  <meta property="og:type" content="website" />
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
 
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .nav {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 15px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-btn.active {
+            background: white;
+            border-bottom-color: #667eea;
+            color: #667eea;
+        }
+
+        .nav-btn:hover {
+            background: #e9ecef;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: transform 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .card-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .card-info div {
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .card-info strong {
+            color: #667eea;
+        }
+
+        .photo-preview {
+            width: 100%;
+            max-width: 200px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-top: 10px;
+            cursor: pointer;
+            border: 2px solid #e9ecef;
+            transition: border-color 0.3s ease;
+        }
+
+        .photo-preview:hover {
+            border-color: #667eea;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .summary-card:hover {
+            transform: scale(1.05);
+        }
+
+        .summary-card h3 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .summary-card p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .nav {
+                flex-direction: column;
+            }
+            
+            .filters {
+                flex-direction: column;
+            }
+            
+            .card-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
-
 <body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.tsx"></script>
-</body>
+    <div class="container">
+        <div class="header">
+            <h1>🏭 Tracker Listew Fabrycznych</h1>
+            <p>System zarządzania inwentarzem fabrycznym</p>
+        </div>
 
+        <div class="nav">
+            <button class="nav-btn active" onclick="showSection('entry')">➕ Dodaj Przedmiot</button>
+            <button class="nav-btn" onclick="showSection('summary')">📊 Podsumowanie</button>
+            <button class="nav-btn" onclick="showSection('inventory')">📦 Inwentarz</button>
+        </div>
+
+        <div class="content">
+            <!-- Sekcja dodawania przedmiotów -->
+            <div id="entry" class="section active">
+                <h2 style="margin-bottom: 25px; color: #2c3e50;">Dodaj Nowy Przedmiot</h2>
+                
+                <form id="inventoryForm">
+                    <div class="grid">
+                        <div class="form-group">
+                            <label for="category">Kategoria</label>
+                            <select id="category" class="form-control" required>
+                                <option value="">Wybierz kategorię</option>
+                                <option value="Clothes">Clothes</option>
+                                <option value="Trousers">Trousers</option>
+                                <option value="Pull Out">Pull Out</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="step">Etap Produkcji</label>
+                            <select id="step" class="form-control" required>
+                                <option value="">Wybierz etap</option>
+                                <option value="Po Pile">Po Pile</option>
+                                <option value="Frezarka">Frezarka</option>
+                                <option value="Po kółkach">Po kółkach</option>
+                                <option value="Pierwszy cykl">Pierwszy cykl</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="quantity">Ilość</label>
+                            <input type="number" id="quantity" class="form-control" min="1" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="location">Lokalizacja</label>
+                            <input type="text" id="location" class="form-control" placeholder="np. Magazyn A, Sektor 3" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">Notatki</label>
+                        <textarea id="notes" class="form-control" rows="3" placeholder="Dodatkowe informacje..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="photo">Zdjęcie</label>
+                        <input type="file" id="photo" class="form-control" accept="image/*">
+                    </div>
+
+                    <button type="submit" class="btn">➕ Dodaj do Inwentarza</button>
+                </form>
+            </div>
+
+            <!-- Sekcja podsumowania -->
+            <div id="summary" class="section">
+                <h2 style="margin-bottom: 25px; color: #2c3e50;">Podsumowanie Inwentarza</h2>
+                
+                <div class="summary-grid" id="summaryGrid">
+                    <!-- Dynamicznie generowane karty podsumowania -->
+                </div>
+
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="filterCategory">Filtruj po kategorii</label>
+                        <select id="filterCategory" class="form-control">
+                            <option value="">Wszystkie kategorie</option>
+                            <option value="Clothes">Clothes</option>
+                            <option value="Trousers">Trousers</option>
+                            <option value="Pull Out">Pull Out</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="filterStep">Filtruj po etapie</label>
+                        <select id="filterStep" class="form-control">
+                            <option value="">Wszystkie etapy</option>
+                            <option value="Po Pile">Po Pile</option>
+                            <option value="Frezarka">Frezarka</option>
+                            <option value="Po kółkach">Po kółkach</option>
+                            <option value="Pierwszy cykl">Pierwszy cykl</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="searchLocation">Szukaj lokalizacji</label>
+                        <input type="text" id="searchLocation" class="form-control" placeholder="Wpisz lokalizację...">
+                    </div>
+                </div>
+
+                <div id="filteredItems"></div>
+            </div>
+
+            <!-- Sekcja inwentarza -->
+            <div id="inventory" class="section">
+                <h2 style="margin-bottom: 25px; color: #2c3e50;">Pełny Inwentarz</h2>
+                
+                <div style="margin-bottom: 20px;">
+                    <button class="btn btn-secondary" onclick="exportData()">📥 Eksportuj Dane</button>
+                    <button class="btn btn-danger" onclick="clearAllData()" style="margin-left: 10px;">🗑️ Wyczyść Wszystko</button>
+                </div>
+
+                <div id="inventoryList" class="grid">
+                    <!-- Dynamicznie generowana lista przedmiotów -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal do wyświetlania zdjęć -->
+    <div id="photoModal" class="modal" onclick="closeModal()">
+        <img id="modalImage" src="" alt="Zdjęcie przedmiotu">
+    </div>
+
+    <script>
+        // Dane inwentarza
+        let inventory = JSON.parse(localStorage.getItem('factoryInventory')) || [];
+
+        // Nawigacja między sekcjami
+        function showSection(sectionId) {
+            // Ukryj wszystkie sekcje
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Usuń aktywną klasę z przycisków
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Pokaż wybraną sekcję
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Dodaj aktywną klasę do przycisku
+            event.target.classList.add('active');
+            
+            // Odśwież dane w sekcji
+            if (sectionId === 'summary') {
+                updateSummary();
+                updateFilteredItems();
+            } else if (sectionId === 'inventory') {
+                updateInventoryList();
+            }
+        }
+
+        // Dodawanie nowego przedmiotu
+        document.getElementById('inventoryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const photoFile = document.getElementById('photo').files[0];
+            
+            const item = {
+                id: Date.now(),
+                category: document.getElementById('category').value,
+                step: document.getElementById('step').value,
+                quantity: parseInt(document.getElementById('quantity').value),
+                location: document.getElementById('location').value,
+                notes: document.getElementById('notes').value,
+                photo: null,
+                timestamp: new Date().toLocaleString('pl-PL')
+            };
+            
+            if (photoFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    item.photo = e.target.result;
+                    saveItem(item);
+                };
+                reader.readAsDataURL(photoFile);
+            } else {
+                saveItem(item);
+            }
+        });
+
+        function saveItem(item) {
+            inventory.push(item);
+            localStorage.setItem('factoryInventory', JSON.stringify(inventory));
+            
+            // Wyczyść formularz
+            document.getElementById('inventoryForm').reset();
+            
+            // Pokaż komunikat
+            alert('✅ Przedmiot został dodany do inwentarza!');
+            
+            // Odśwież wyświetlanie
+            updateSummary();
+            updateInventoryList();
+        }
+
+        // Aktualizacja podsumowania
+        function updateSummary() {
+            const summaryGrid = document.getElementById('summaryGrid');
+            
+            if (inventory.length === 0) {
+                summaryGrid.innerHTML = '<div class="empty-state"><h3>Brak danych</h3><p>Dodaj pierwszy przedmiot do inwentarza</p></div>';
+                return;
+            }
+            
+            // Grupowanie danych
+            const byCategory = {};
+            const byStep = {};
+            let totalItems = 0;
+            let totalQuantity = 0;
+            
+            inventory.forEach(item => {
+                // Po kategorii
+                if (!byCategory[item.category]) {
+                    byCategory[item.category] = { count: 0, quantity: 0 };
+                }
+                byCategory[item.category].count++;
+                byCategory[item.category].quantity += item.quantity;
+                
+                // Po etapie
+                if (!byStep[item.step]) {
+                    byStep[item.step] = { count: 0, quantity: 0 };
+                }
+                byStep[item.step].count++;
+                byStep[item.step].quantity += item.quantity;
+                
+                totalItems++;
+                totalQuantity += item.quantity;
+            });
+            
+            let html = `
+                <div class="summary-card" onclick="filterBy('', '')">
+                    <h3>${totalItems}</h3>
+                    <p>Łącznie przedmiotów<br>(${totalQuantity} szt.)</p>
+                </div>
+            `;
+            
+            // Karty kategorii
+            Object.entries(byCategory).forEach(([category, data]) => {
+                html += `
+                    <div class="summary-card" onclick="filterBy('category', '${category}')">
+                        <h3>${data.count}</h3>
+                        <p>${category}<br>(${data.quantity} szt.)</p>
+                    </div>
+                `;
+            });
+            
+            // Karty etapów
+            Object.entries(byStep).forEach(([step, data]) => {
+                html += `
+                    <div class="summary-card" onclick="filterBy('step', '${step}')">
+                        <h3>${data.count}</h3>
+                        <p>${step}<br>(${data.quantity} szt.)</p>
+                    </div>
+                `;
+            });
+            
+            summaryGrid.innerHTML = html;
+        }
+
+        // Filtrowanie przez kliknięcie w kartę podsumowania
+        function filterBy(type, value) {
+            if (type === 'category') {
+                document.getElementById('filterCategory').value = value;
+            } else if (type === 'step') {
+                document.getElementById('filterStep').value = value;
+            }
+            updateFilteredItems();
+        }
+
+        // Aktualizacja przefiltrowanych przedmiotów
+        function updateFilteredItems() {
+            const categoryFilter = document.getElementById('filterCategory').value;
+            const stepFilter = document.getElementById('filterStep').value;
+            const locationFilter = document.getElementById('searchLocation').value.toLowerCase();
+            
+            let filtered = inventory.filter(item => {
+                return (!categoryFilter || item.category === categoryFilter) &&
+                       (!stepFilter || item.step === stepFilter) &&
+                       (!locationFilter || item.location.toLowerCase().includes(locationFilter));
+            });
+            
+            const container = document.getElementById('filteredItems');
+            
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="empty-state"><h3>Brak wyników</h3><p>Spróbuj zmienić filtry</p></div>';
+                return;
+            }
+            
+            container.innerHTML = `
+                <h3 style="margin: 20px 0; color: #2c3e50;">Znalezione przedmioty (${filtered.length})</h3>
+                <div class="grid">${filtered.map(createItemCard).join('')}</div>
+            `;
+        }
+
+        // Aktualizacja listy inwentarza
+        function updateInventoryList() {
+            const container = document.getElementById('inventoryList');
+            
+            if (inventory.length === 0) {
+                container.innerHTML = '<div class="empty-state"><h3>Pusty inwentarz</h3><p>Dodaj pierwszy przedmiot używając zakładki "Dodaj Przedmiot"</p></div>';
+                return;
+            }
+            
+            container.innerHTML = inventory.map(createItemCard).join('');
+        }
+
+        // Tworzenie karty przedmiotu
+        function createItemCard(item) {
+            return `
+                <div class="card">
+                    <h3>${item.category} - ${item.step}</h3>
+                    <div class="card-info">
+                        <div><strong>Ilość:</strong> ${item.quantity} szt.</div>
+                        <div><strong>Lokalizacja:</strong> ${item.location}</div>
+                        <div><strong>Data:</strong> ${item.timestamp}</div>
+                        <div><strong>ID:</strong> #${item.id}</div>
+                    </div>
+                    ${item.notes ? `<p style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 6px;"><strong>Notatki:</strong> ${item.notes}</p>` : ''}
+                    ${item.photo ? `<img src="${item.photo}" alt="Zdjęcie przedmiotu" class="photo-preview" onclick="showPhoto('${item.photo}')">` : ''}
+                    <button class="btn btn-danger" onclick="removeItem(${item.id})" style="margin-top: 15px; width: 100%;">🗑️ Usuń</button>
+                </div>
+            `;
+        }
+
+        // Wyświetlanie zdjęcia w modalu
+        function showPhoto(photoSrc) {
+            document.getElementById('modalImage').src = photoSrc;
+            document.getElementById('photoModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('photoModal').classList.remove('active');
+        }
+
+        // Usuwanie przedmiotu
+        function removeItem(id) {
+            if (confirm('Czy na pewno chcesz usunąć ten przedmiot?')) {
+                inventory = inventory.filter(item => item.id !== id);
+                localStorage.setItem('factoryInventory', JSON.stringify(inventory));
+                updateSummary();
+                updateInventoryList();
+                updateFilteredItems();
+                alert('✅ Przedmiot został usunięty!');
+            }
+        }
+
+        // Eksport danych
+        function exportData() {
+            if (inventory.length === 0) {
+                alert('Brak danych do eksportu!');
+                return;
+            }
+            
+            const csvContent = [
+                ['ID', 'Kategoria', 'Etap', 'Ilość', 'Lokalizacja', 'Notatki', 'Data'].join(','),
+                ...inventory.map(item => [
+                    item.id,
+                    item.category,
+                    item.step,
+                    item.quantity,
+                    `"${item.location}"`,
+                    `"${item.notes || ''}"`,
+                    `"${item.timestamp}"`
+                ].join(','))
+            ].join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `inwentarz_fabryczny_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+        }
+
+        // Czyszczenie wszystkich danych
+        function clearAllData() {
+            if (confirm('Czy na pewno chcesz usunąć wszystkie dane? Ta operacja jest nieodwracalna!')) {
+                inventory = [];
+                localStorage.removeItem('factoryInventory');
+                updateSummary();
+                updateInventoryList();
+                updateFilteredItems();
+                alert('✅ Wszystkie dane zostały usunięte!');
+            }
+        }
+
+        // Event listenery dla filtrów
+        document.getElementById('filterCategory').addEventListener('change', updateFilteredItems);
+        document.getElementById('filterStep').addEventListener('change', updateFilteredItems);
+        document.getElementById('searchLocation').addEventListener('input', updateFilteredItems);
+
+        // Inicjalizacja
+        updateSummary();
+        updateInventoryList();
+    </script>
+</body>
 </html>
